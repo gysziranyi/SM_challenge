@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   maxUsers,
   minimumOccurrencesOfPrimeDigit,
   numberOfVisibleUsers,
 } from "../constants";
+import { MoonLoader } from "react-spinners";
+//import resolveConfig from 'tailwindcss/resolveConfig'
+//import tailwindConfig from '../../tailwind.config.js'
 
 export interface Info {
   page: number;
@@ -83,8 +86,12 @@ export const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [visibleUsers, setVisibleUsers] = useState<User[]>([]);
   const [page, setPage] = useState<number>(1);
+  const [loading, setLoading] = useState(true);
   const [sex, setSex] = useState<"female" | "male" | "">("");
-  const [queryType, setQueryType] = useState<QueryType>(QueryType.ALL);
+  // const [queryType, setQueryType] = useState<QueryType>(QueryType.ALL);
+
+  // const twFullConfig = resolveConfig(tailwindConfig);
+  // const colors = twFullConfig.theme.colors["darkGreen"] as {[key:string]:string};
 
   // typeof User.location.postalcode
   const countPrimeDigits = (postalcode: number | string): number => {
@@ -94,38 +101,46 @@ export const UserList = () => {
       .filter((char) => primeDigits.has(char)).length;
   };
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      // ?results=${numberOfVisibleUsers}
-      // &inc=gender,name,location
+  useEffect(
+    () => {
+      const fetchUsers = async () => {
+        // ?results=${numberOfVisibleUsers}
+        // &inc=gender,name,location
 
-      const arr = [
-        `https://randomuser.me/api?`,
-        `results=${
-          queryType === QueryType.ALL ? maxUsers : numberOfVisibleUsers
-        }`,
-        // `&seed=1245af4eb2e88bed`,
-        `&inc=gender,name,location`,
-      ];
+        const arr = [
+          `https://randomuser.me/api?`,
+          `results=${
+            /* queryType === QueryType.ALL ? maxUsers : numberOfVisibleUsers */ maxUsers
+          }`,
+          // `&seed=1245af4eb2e88bed`,
+          `&inc=gender,name,location`,
+        ];
 
-      fetch(arr.join(""))
-        .then((response) => response.json())
-        .then((data: ApiResponse) => {
-          const usersHavingPrimes = data.results.filter(
-            (u) =>
-              countPrimeDigits(u.location.postcode) >=
-              minimumOccurrencesOfPrimeDigit
-          );
-          console.log(usersHavingPrimes);
-          console.log(usersHavingPrimes.length);
-          setUsers(usersHavingPrimes);
-        })
-        .catch((error) => {
-          console.error("Hiba történt:", error);
-        });
-    };
-    fetchUsers();
-  }, [queryType]);
+        fetch(arr.join(""))
+          .then((response) => response.json())
+          .then((data: ApiResponse) => {
+            const usersHavingPrimes = data.results.filter(
+              (u) =>
+                countPrimeDigits(u.location.postcode) >=
+                minimumOccurrencesOfPrimeDigit
+            );
+            console.log(usersHavingPrimes);
+            console.log(usersHavingPrimes.length);
+            setUsers(usersHavingPrimes);
+          })
+          .catch((error) => {
+            console.error("Hiba történt:", error);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      };
+      fetchUsers();
+    },
+    [
+      /* queryType */
+    ]
+  );
 
   useEffect(() => {
     if (users.length > 0) {
@@ -140,9 +155,9 @@ export const UserList = () => {
     }
   }, [page, users, sex]);
 
-  const handleChange = (event: any) => {
-    console.log(event.target.value);
-    setSex(event.target.value);
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+	console.log(event.target.value);
+    setSex(event.target.value as "" | "female" | "male");
   };
 
   const handlePrevious = () => setPage((prev) => Math.max(prev - 1, 1));
@@ -157,7 +172,7 @@ export const UserList = () => {
         <div className="flex gap-2">
           <div /* className="floating-label" */>
             <label htmlFor="postcode">Irányítószám: </label>
-			
+
             <input
               className="border-b-[2px] bg-inputFieldBlue border-gray focus:bg-darkGreen focus:border-valid focus:border-teal focus:outline-none focus:ring-0"
               type="text"
@@ -196,20 +211,35 @@ export const UserList = () => {
             <div className="w-auto min-w-52 max-w-full p-1">Nem</div>
             <div className="w-auto min-w-52 max-w-full p-1">Név</div>
           </li>
-          {visibleUsers.map((user: User, index) => (
-            /* display: "flex", flexWrap: "wrap"  */
-            <li key={index} className="flex w-full">
-              <div className="w-auto min-w-52 max-w-full p-1">
-                {user.location.postcode}
-              </div>
-              <div className="w-auto min-w-52 max-w-full p-1">
-                {user.gender === "female" ? "Nő" : "Férfi"}
-              </div>
-              <div className="w-auto min-w-52 max-w-full p-1">
-                {user.name.title} {user.name.first} {user.name.last}
-              </div>
-            </li>
-          ))}
+          {loading ? (
+            <div className="flex w-full justify-center my-10">
+              <MoonLoader
+                color={"grey"}
+                loading={loading}
+                size={100}
+                speedMultiplier={0.5}
+                aria-label="Loading Spinner"
+                data-testid="loader"
+              />
+            </div>
+          ) : (
+            <>
+              {visibleUsers.map((user: User, index) => (
+                /* display: "flex", flexWrap: "wrap"  */
+                <li key={index} className="flex w-full">
+                  <div className="w-auto min-w-52 max-w-full p-1">
+                    {user.location.postcode}
+                  </div>
+                  <div className="w-auto min-w-52 max-w-full p-1">
+                    {user.gender === "female" ? "Nő" : "Férfi"}
+                  </div>
+                  <div className="w-auto min-w-52 max-w-full p-1">
+                    {user.name.title} {user.name.first} {user.name.last}
+                  </div>
+                </li>
+              ))}
+            </>
+          )}
         </ul>
       </div>
       <div className="w-full h-24 flex justify-center items-center">
@@ -217,12 +247,12 @@ export const UserList = () => {
           <button
             onClick={handlePrevious}
             disabled={page === 1}
-            className="bg-theme-color-14 w-8 h-8 bg-[url('/src/assets/chevron-left.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer"
+            className="bg-theme-color-14 w-8 h-8 bg-[url('/src/assets/chevron-left.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer disabled:bg-grey"
           ></button>
           <button
             onClick={handleNext}
             disabled={page === Math.ceil(users.length / numberOfVisibleUsers)}
-            className="bg-theme-color-14 w-8 h-8 bg-[url('/src/assets/chevron-right.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer"
+            className="bg-theme-color-14 w-8 h-8 bg-[url('/src/assets/chevron-right.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer disabled:bg-grey"
           ></button>
         </div>
       </div>
