@@ -4,6 +4,7 @@ import {
   minimumOccurrencesOfPrimeDigit,
   numberOfVisibleUsers,
 } from "../constants";
+import ChevronRight from "../assets/chevron-right.svg";
 
 export interface Info {
   page: number;
@@ -78,6 +79,8 @@ enum QueryType {
   ALL = "ALL",
   SEED = "SEED",
 }
+
+const styles = {};
 
 export const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -171,26 +174,47 @@ export const UserList = () => {
         </div>
       </div>
 
-      <ul>
-        {visibleUsers.map((user: User, index) => (
-          <li key={index} style={{ display: "table-row" }}>
-            {user.location.postcode} –{" "}
-            {user.gender === "female" ? "Nő" : "Férfi"} - {user.name.title}{" "}
-            {user.name.first} {user.name.last}
-          </li>
-        ))}
-      </ul>
-      <div style={{ marginTop: "1rem" }}>
-        <button onClick={handlePrevious} disabled={page === 1}>
-          Előző
-        </button>
-        <button
-          onClick={handleNext}
-          disabled={page === Math.ceil(users.length / numberOfVisibleUsers)}
-        >
-          Következő
-        </button>
+      <div style={{ display: "flex", alignItems: "flex-end", width: "100%" }}>
+        {/* position: "relative" */}
+        <ul style={{ listStyle: "none" }}>
+          {visibleUsers.map((user: User, index) => (
+            /* display: "flex", flexWrap: "wrap"  */
+            <li key={index} style={{ display: "flex", width: "100%" }}>
+              <div
+                style={{ width: "auto", minWidth: "213px", maxWidth: "100%" }}
+              >
+                {user.location.postcode}
+              </div>
+              <div
+                style={{ width: "auto", minWidth: "213px", maxWidth: "100%" }}
+              >
+                {user.gender === "female" ? "Nő" : "Férfi"}
+              </div>
+              <div
+                style={{ width: "auto", minWidth: "213px", maxWidth: "100%" }}
+              >
+                {user.name.title} {user.name.first} {user.name.last}
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
+      <div className="w-full h-24 flex justify-center items-center">
+        <div className="w-1/2 flex justify-between"
+        >
+          <button
+            onClick={handlePrevious}
+            disabled={page === 1}
+			className="bg-siemens-blue w-8 h-8 bg-[url('/src/assets/chevron-left.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer"
+          ></button>
+          <button
+            onClick={handleNext}
+            disabled={page === Math.ceil(users.length / numberOfVisibleUsers)}
+			className="bg-siemens-blue w-8 h-8 bg-[url('/src/assets/chevron-right.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer"
+          ></button>
+        </div>
+      </div>
+
       {/* <div>{users.length}</div>
 	  <div>{numberOfVisibleUsers}</div>
 	  <div>{Math.ceil(users.length / numberOfVisibleUsers)}</div> */}
