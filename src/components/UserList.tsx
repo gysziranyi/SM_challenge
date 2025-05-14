@@ -4,7 +4,6 @@ import {
   minimumOccurrencesOfPrimeDigit,
   numberOfVisibleUsers,
 } from "../constants";
-import ChevronRight from "../assets/chevron-right.svg";
 
 export interface Info {
   page: number;
@@ -80,8 +79,6 @@ enum QueryType {
   SEED = "SEED",
 }
 
-const styles = {};
-
 export const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [visibleUsers, setVisibleUsers] = useState<User[]>([]);
@@ -154,45 +151,61 @@ export const UserList = () => {
 
   return (
     <div>
-      <h2>Felhasználók listája:</h2>
+      <h2 className="text-theme-color-14 text-lg">Felhasználók listája:</h2>
 
-      <div className="cell lp-form-field" data-editorblocktype="Field-dropdown">
-        <div data-required-field="true" className="floating-label">
-          <select
-            className="lp-form-fieldInput floating-select"
-            id="41e3e69e-0ac9-eb11-bacc-000d3ab27435"
-            name="41e3e69e-0ac9-eb11-bacc-000d3ab27435"
-            onChange={handleChange}
-            /* value={sex} */
+      <div className="flex justify-end">
+        <div className="flex gap-2">
+          <div /* className="floating-label" */>
+            <label htmlFor="postcode">Irányítószám: </label>
+			
+            <input
+              className="border-b-[2px] bg-inputFieldBlue border-gray focus:bg-darkGreen focus:border-valid focus:border-teal focus:outline-none focus:ring-0"
+              type="text"
+              placeholder=" "
+              id="postcode"
+              name="postcode"
+              pattern=".*\S+.*"
+            />
+          </div>
+
+          <div
+            className="cell lp-form-field"
+            data-editorblocktype="Field-dropdown"
           >
-            <option value=""></option>
-            <option value="female">Nő</option>
-            <option value="male">Férfi</option>
-          </select>
-          <span className="highlight"></span>
-          <label>Nemek:</label>
+            <div /* className="floating-label" */>
+              <label htmlFor="sex">Nemek:</label>
+              <select
+                className="border-b-[2px] bg-inputFieldBlue border-gray focus:bg-darkGreen focus:border-valid focus:border-teal focus:outline-none focus:ring-0"
+                id="sex"
+                name="sex"
+                onChange={handleChange}
+              >
+                <option value=""></option>
+                <option value="female">Nő</option>
+                <option value="male">Férfi</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "flex-end", width: "100%" }}>
-        {/* position: "relative" */}
-        <ul style={{ listStyle: "none" }}>
+      <div>
+        <ul className="w-full" /* style={{ listStyle: "none" }} */>
+          <li className="flex text-lg w-full border-b-[2px] border-theme-color-8">
+            <div className="w-auto min-w-52 max-w-full p-1">Irányítószám</div>
+            <div className="w-auto min-w-52 max-w-full p-1">Nem</div>
+            <div className="w-auto min-w-52 max-w-full p-1">Név</div>
+          </li>
           {visibleUsers.map((user: User, index) => (
             /* display: "flex", flexWrap: "wrap"  */
-            <li key={index} style={{ display: "flex", width: "100%" }}>
-              <div
-                style={{ width: "auto", minWidth: "213px", maxWidth: "100%" }}
-              >
+            <li key={index} className="flex w-full">
+              <div className="w-auto min-w-52 max-w-full p-1">
                 {user.location.postcode}
               </div>
-              <div
-                style={{ width: "auto", minWidth: "213px", maxWidth: "100%" }}
-              >
+              <div className="w-auto min-w-52 max-w-full p-1">
                 {user.gender === "female" ? "Nő" : "Férfi"}
               </div>
-              <div
-                style={{ width: "auto", minWidth: "213px", maxWidth: "100%" }}
-              >
+              <div className="w-auto min-w-52 max-w-full p-1">
                 {user.name.title} {user.name.first} {user.name.last}
               </div>
             </li>
@@ -200,17 +213,16 @@ export const UserList = () => {
         </ul>
       </div>
       <div className="w-full h-24 flex justify-center items-center">
-        <div className="w-1/2 flex justify-between"
-        >
+        <div className="w-1/2 flex justify-between">
           <button
             onClick={handlePrevious}
             disabled={page === 1}
-			className="bg-siemens-blue w-8 h-8 bg-[url('/src/assets/chevron-left.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer"
+            className="bg-theme-color-14 w-8 h-8 bg-[url('/src/assets/chevron-left.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer"
           ></button>
           <button
             onClick={handleNext}
             disabled={page === Math.ceil(users.length / numberOfVisibleUsers)}
-			className="bg-siemens-blue w-8 h-8 bg-[url('/src/assets/chevron-right.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer"
+            className="bg-theme-color-14 w-8 h-8 bg-[url('/src/assets/chevron-right.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer"
           ></button>
         </div>
       </div>
@@ -218,7 +230,7 @@ export const UserList = () => {
       {/* <div>{users.length}</div>
 	  <div>{numberOfVisibleUsers}</div>
 	  <div>{Math.ceil(users.length / numberOfVisibleUsers)}</div> */}
-      <div>{page}</div>
+      {/* <div>{page}</div> */}
     </div>
   );
 };
