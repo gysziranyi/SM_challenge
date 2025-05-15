@@ -1,4 +1,4 @@
-import { Option, Select } from "./select";
+import { Option, Select } from "./Select";
 
 export interface UserSelectProps {
   id: string;

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { InputField } from "../components/inputfield";
-import { UserSelect } from "../components/UserSelect";
-import { User } from "../api/types/api";
 import { fetchUsers } from "../api/randomuser";
+import { User } from "../api/types/api";
+import { UserSelect } from "../components/UserSelect";
+import { UserInputField } from "../components/UserInputfield";
+import { UserList } from "../components/UserList";
 import { maxUsers, minimumOccurrencesOfPrimeDigit } from "../constants";
 import { countPrimeDigits } from "../utils/userUtils";
-import { UserList } from "../components/UserList";
 
 export const UserPage = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -46,7 +46,7 @@ export const UserPage = () => {
 
       <div className="flex justify-end">
         <div className="flex gap-2">
-          <InputField
+          <UserInputField
             id="postcode"
             label="Irányítószám"
             pattern=".*\S+.*"

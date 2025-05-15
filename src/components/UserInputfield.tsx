@@ -1,4 +1,4 @@
-import { InputField } from "./inputfield";
+import { InputField } from "./InputField";
 
 interface UserInputFieldProps {
   id: string;
