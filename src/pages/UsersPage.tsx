@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from 'react-toastify';
 import { fetchUsers } from "../api/randomuser";
 import { User } from "../api/types/api";
 import { UserSelect } from "../components/UserSelect";
@@ -32,7 +33,11 @@ export const UserPage = () => {
           )
         );
       } catch (error) {
-        console.error("Hiba a felhasználók lekérésekor:", error);
+        if (error instanceof Error) {
+          toast.error(`Hiba a felhasználók lekérésekor: ${error.message}`);
+        } else {
+          toast.error("Ismeretlen hiba történt.");
+        }
       }
     };
     loadUsers();
@@ -44,7 +49,7 @@ export const UserPage = () => {
         Felhasználók listája:
       </h2>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end mb-4">
         <div className="flex gap-2">
           <UserInputField
             id="postcode"

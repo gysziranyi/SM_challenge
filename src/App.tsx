@@ -1,5 +1,6 @@
 import React from "react";
 //import logo from './logo.svg';
+import { ToastContainer } from "react-toastify";
 import "./App.css";
 import { UserPage } from "./pages/UsersPage";
 
@@ -24,6 +25,8 @@ function App() {
 
       <main className="py-10 mx-auto w-3/4">
         <UserPage />
+
+        <ToastContainer />
       </main>
     </div>
   );
