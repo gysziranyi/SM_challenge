@@ -8,13 +8,6 @@ import { MoonLoader } from "react-spinners";
 import { fetchUsers } from "../api/randomuser";
 import { User } from "../api/types/api";
 import { countPrimeDigits } from "../utils/userUtils";
-//import resolveConfig from 'tailwindcss/resolveConfig'
-//import tailwindConfig from '../../tailwind.config.js'
-
-enum QueryType {
-  ALL = "ALL",
-  SEED = "SEED",
-}
 
 export const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -22,35 +15,26 @@ export const UserList = () => {
   const [page, setPage] = useState<number>(1);
   const [loading, setLoading] = useState(true);
   const [sex, setSex] = useState<"female" | "male" | "">("");
-  // const [queryType, setQueryType] = useState<QueryType>(QueryType.ALL);
 
-  // const twFullConfig = resolveConfig(tailwindConfig);
-  // const colors = twFullConfig.theme.colors["darkGreen"] as {[key:string]:string};
-
-  useEffect(
-    () => {
-      const loadUsers = async () => {
-        try {
-          const { results } = await fetchUsers(maxUsers);
-          setUsers(
-            results.filter(
-              (u) =>
-                countPrimeDigits(u.location.postcode) >=
-                minimumOccurrencesOfPrimeDigit
-            )
-          );
-        } catch (error) {
-          console.error("Hiba a felhasználók lekérésekor:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      loadUsers();
-    },
-    [
-      /* queryType */
-    ]
-  );
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const { results } = await fetchUsers(maxUsers);
+        setUsers(
+          results.filter(
+            (u) =>
+              countPrimeDigits(u.location.postcode) >=
+              minimumOccurrencesOfPrimeDigit
+          )
+        );
+      } catch (error) {
+        console.error("Hiba a felhasználók lekérésekor:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadUsers();
+  }, []);
 
   useEffect(() => {
     if (users.length > 0) {
@@ -72,7 +56,7 @@ export const UserList = () => {
 
   return (
     <div>
-      <h2 className="text-theme-color-14 text-lg">Felhasználók listája:</h2>
+      <h2 className="text-theme-color-14 text-lg mb-4">Felhasználók listája:</h2>
 
       <div className="flex justify-end">
         <div className="flex gap-2">
@@ -88,23 +72,18 @@ export const UserList = () => {
             />
           </div>
 
-          <div
-            className="cell lp-form-field"
-            data-editorblocktype="Field-dropdown"
-          >
-            <div className="flex gap-2">
-              <label htmlFor="sex">Nem:</label>
-              <select
-                className="border-b-[2px] bg-inputFieldBlue border-gray focus:bg-darkGreen focus:border-valid focus:border-teal focus:outline-none focus:ring-0"
-                id="sex"
-                name="sex"
-                onChange={handleChange}
-              >
-                <option value=""></option>
-                <option value="female">Nő</option>
-                <option value="male">Férfi</option>
-              </select>
-            </div>
+          <div className="flex gap-2">
+            <label htmlFor="sex">Nem:</label>
+            <select
+              className="border-b-[2px] bg-inputFieldBlue border-gray focus:bg-darkGreen focus:border-valid focus:border-teal focus:outline-none focus:ring-0"
+              id="sex"
+              name="sex"
+              onChange={handleChange}
+            >
+              <option value=""></option>
+              <option value="female">Nő</option>
+              <option value="male">Férfi</option>
+            </select>
           </div>
         </div>
       </div>
@@ -160,11 +139,6 @@ export const UserList = () => {
           ></button>
         </div>
       </div>
-
-      {/* <div>{users.length}</div>
-	  <div>{numberOfVisibleUsers}</div>
-	  <div>{Math.ceil(users.length / numberOfVisibleUsers)}</div> */}
-      {/* <div>{page}</div> */}
     </div>
   );
 };
