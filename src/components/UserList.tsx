@@ -35,10 +35,12 @@ export const UserList = (props: UserListProps) => {
   }, [props.users, props.sex, props.postcode]);
 
   useEffect(() => {
-    const startIndex = (page - 1) * numberOfVisibleUsers;
-    setVisibleUsers(
-      filteredUsers.slice(startIndex, startIndex + numberOfVisibleUsers)
-    );
+    if (filteredUsers.length > 0) {
+      const startIndex = (page - 1) * numberOfVisibleUsers;
+      setVisibleUsers(
+        filteredUsers.slice(startIndex, startIndex + numberOfVisibleUsers)
+      );
+    }
   }, [filteredUsers, page]);
 
   return (
