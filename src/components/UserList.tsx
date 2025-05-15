@@ -7,6 +7,7 @@ import {
 import { MoonLoader } from "react-spinners";
 import { fetchUsers } from "../api/randomuser";
 import { User } from "../api/types/api";
+import { countPrimeDigits } from "../utils/userUtils";
 //import resolveConfig from 'tailwindcss/resolveConfig'
 //import tailwindConfig from '../../tailwind.config.js'
 
@@ -26,27 +27,18 @@ export const UserList = () => {
   // const twFullConfig = resolveConfig(tailwindConfig);
   // const colors = twFullConfig.theme.colors["darkGreen"] as {[key:string]:string};
 
-  // typeof User.location.postalcode
-  const countPrimeDigits = (postalcode: number | string): number => {
-    const primeDigits = new Set(["2", "3", "5", "7"]);
-    return String(postalcode)
-      .split("")
-      .filter((char) => primeDigits.has(char)).length;
-  };
-
   useEffect(
     () => {
       const loadUsers = async () => {
         try {
           const { results } = await fetchUsers(maxUsers);
-          const usersHavingPrimes = results.filter(
-            (u) =>
-              countPrimeDigits(u.location.postcode) >=
-              minimumOccurrencesOfPrimeDigit
+          setUsers(
+            results.filter(
+              (u) =>
+                countPrimeDigits(u.location.postcode) >=
+                minimumOccurrencesOfPrimeDigit
+            )
           );
-          console.log(usersHavingPrimes);
-          console.log(usersHavingPrimes.length);
-          setUsers(usersHavingPrimes);
         } catch (error) {
           console.error("Hiba a felhasználók lekérésekor:", error);
         } finally {
@@ -62,19 +54,15 @@ export const UserList = () => {
 
   useEffect(() => {
     if (users.length > 0) {
-      let pool = users;
-      if (sex) {
-        pool = pool.filter((u) => u.gender === sex);
-      }
+      let filtered = sex ? users.filter((u) => u.gender === sex) : users;
       const startIndex = (page - 1) * numberOfVisibleUsers;
       setVisibleUsers(
-        pool.slice(startIndex, startIndex + numberOfVisibleUsers)
+        filtered.slice(startIndex, startIndex + numberOfVisibleUsers)
       );
     }
   }, [page, users, sex]);
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log(event.target.value);
     setSex(event.target.value as "" | "female" | "male");
   };
 
