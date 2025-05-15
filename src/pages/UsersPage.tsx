@@ -48,10 +48,12 @@ export const UserPage = () => {
         <div className="flex gap-2">
           <UserInputField
             id="postcode"
+            name="postcode"
             label="Irányítószám"
             pattern=".*\S+.*"
             placeholder=" "
             handleChange={handleChangeInput}
+            data-testid="postcode"
           />
 
           <UserSelect

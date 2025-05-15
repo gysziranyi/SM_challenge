@@ -21,7 +21,7 @@ export const Select = (props: SelectProps) => {
         name={props.name}
         onChange={props.handleChange}
       >
-        {props.options.map((option) => (<option value={option.value}>{option.label}</option>))}
+        {props.options.map((option, index) => (<option key={index} value={option.value}>{option.label}</option>))}
       </select>
     </div>
   );

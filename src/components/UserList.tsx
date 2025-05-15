@@ -13,9 +13,8 @@ export interface UserListProps {
 
 export const UserList = (props: UserListProps) => {
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const [visibleUsers, setVisibleUsers] = useState<User[]>([]);
+  const [visibleUsers, setVisibleUsers] = useState<User[] | null>(null);
   const [page, setPage] = useState<number>(1);
-  const [loading, setLoading] = useState(true);
 
   const handlePrevious = () => setPage((prev) => Math.max(prev - 1, 1));
 
@@ -32,10 +31,7 @@ export const UserList = (props: UserListProps) => {
       }
       setFilteredUsers(filtered);
       setPage(1);
-    } else {
-      setVisibleUsers([]);
     }
-    setLoading(false);
   }, [props.users, props.sex, props.postcode]);
 
   useEffect(() => {
@@ -54,11 +50,11 @@ export const UserList = (props: UserListProps) => {
             <div className="w-1/3 p-1">Nem</div>
             <div className="w-1/3 p-1">Név</div>
           </li>
-          {loading ? (
+          {visibleUsers === null ? (
             <div className="flex w-full justify-center my-10">
               <MoonLoader
                 color={"grey"}
-                loading={loading}
+                loading={true}
                 size={100}
                 speedMultiplier={0.5}
                 aria-label="Loading Spinner"
@@ -68,7 +64,7 @@ export const UserList = (props: UserListProps) => {
           ) : (
             <>
               {visibleUsers.length > 0 ? visibleUsers.map((user: User, index) => (
-                <li key={index} className="flex w-full">
+                <li key={index} className="flex w-full" data-testid="userRow">
                   <div className="w-1/3 p-1">{user.location.postcode}</div>
                   <div className="w-1/3 p-1">
                     {user.gender === "female" ? "Nő" : "Férfi"}
@@ -94,12 +90,14 @@ export const UserList = (props: UserListProps) => {
             disabled={page === 1}
             className="bg-theme-color-14 w-8 h-8 bg-[url('/src/assets/chevron-left.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer disabled:bg-grey"
             title="Előző"
+            data-testid="buttonPrev"
           ></button>
           <button
             onClick={handleNext}
             disabled={page === Math.ceil(filteredUsers.length / numberOfVisibleUsers)}
             className="bg-theme-color-14 w-8 h-8 bg-[url('/src/assets/chevron-right.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer disabled:bg-grey"
             title="Következő"
+            data-testid="buttonNext"
           ></button>
         </div>
       </div>
