@@ -5,77 +5,10 @@ import {
   numberOfVisibleUsers,
 } from "../constants";
 import { MoonLoader } from "react-spinners";
+import { fetchUsers } from "../api/randomuser";
+import { User } from "../api/types/api";
 //import resolveConfig from 'tailwindcss/resolveConfig'
 //import tailwindConfig from '../../tailwind.config.js'
-
-export interface Info {
-  page: number;
-  result: number;
-  seed: string;
-  version: string;
-}
-
-interface User {
-  gender: string;
-  name: {
-    title: string;
-    first: string;
-    last: string;
-  };
-  location: {
-    street: {
-      number: number;
-      name: string;
-    };
-    city: string;
-    state: string;
-    country: string;
-    postcode: number | string;
-    coordinates: {
-      latitude: string;
-      longitude: string;
-    };
-    timezone: {
-      offset: string;
-      description: string;
-    };
-  };
-  email: string;
-  login: {
-    uuid: string;
-    username: string;
-    password: string;
-    salt: string;
-    md5: string;
-    sha1: string;
-    sha256: string;
-  };
-  dob: {
-    date: string;
-    age: number;
-  };
-  registered: {
-    date: string;
-    age: number;
-  };
-  phone: string;
-  cell: string;
-  id: {
-    name: string;
-    value: string;
-  };
-  picture: {
-    large: string;
-    medium: string;
-    thumbnail: string;
-  };
-  nat: string;
-}
-
-interface ApiResponse {
-  info: Info;
-  results: User[];
-}
 
 enum QueryType {
   ALL = "ALL",
@@ -103,39 +36,24 @@ export const UserList = () => {
 
   useEffect(
     () => {
-      const fetchUsers = async () => {
-        // ?results=${numberOfVisibleUsers}
-        // &inc=gender,name,location
-
-        const arr = [
-          `https://randomuser.me/api?`,
-          `results=${
-            /* queryType === QueryType.ALL ? maxUsers : numberOfVisibleUsers */ maxUsers
-          }`,
-          // `&seed=1245af4eb2e88bed`,
-          `&inc=gender,name,location`,
-        ];
-
-        fetch(arr.join(""))
-          .then((response) => response.json())
-          .then((data: ApiResponse) => {
-            const usersHavingPrimes = data.results.filter(
-              (u) =>
-                countPrimeDigits(u.location.postcode) >=
-                minimumOccurrencesOfPrimeDigit
-            );
-            console.log(usersHavingPrimes);
-            console.log(usersHavingPrimes.length);
-            setUsers(usersHavingPrimes);
-          })
-          .catch((error) => {
-            console.error("Hiba történt:", error);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
+      const loadUsers = async () => {
+        try {
+          const { results } = await fetchUsers(maxUsers);
+          const usersHavingPrimes = results.filter(
+            (u) =>
+              countPrimeDigits(u.location.postcode) >=
+              minimumOccurrencesOfPrimeDigit
+          );
+          console.log(usersHavingPrimes);
+          console.log(usersHavingPrimes.length);
+          setUsers(usersHavingPrimes);
+        } catch (error) {
+          console.error("Hiba a felhasználók lekérésekor:", error);
+        } finally {
+          setLoading(false);
+        }
       };
-      fetchUsers();
+      loadUsers();
     },
     [
       /* queryType */
@@ -156,7 +74,7 @@ export const UserList = () => {
   }, [page, users, sex]);
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-	console.log(event.target.value);
+    console.log(event.target.value);
     setSex(event.target.value as "" | "female" | "male");
   };
 
@@ -170,9 +88,8 @@ export const UserList = () => {
 
       <div className="flex justify-end">
         <div className="flex gap-2">
-          <div /* className="floating-label" */>
-            <label htmlFor="postcode">Irányítószám: </label>
-
+          <div className="flex gap-2">
+            <label htmlFor="postcode">Irányítószám:</label>
             <input
               className="border-b-[2px] bg-inputFieldBlue border-gray focus:bg-darkGreen focus:border-valid focus:border-teal focus:outline-none focus:ring-0"
               type="text"
@@ -187,8 +104,8 @@ export const UserList = () => {
             className="cell lp-form-field"
             data-editorblocktype="Field-dropdown"
           >
-            <div /* className="floating-label" */>
-              <label htmlFor="sex">Nemek:</label>
+            <div className="flex gap-2">
+              <label htmlFor="sex">Nem:</label>
               <select
                 className="border-b-[2px] bg-inputFieldBlue border-gray focus:bg-darkGreen focus:border-valid focus:border-teal focus:outline-none focus:ring-0"
                 id="sex"
@@ -207,9 +124,9 @@ export const UserList = () => {
       <div>
         <ul className="w-full" /* style={{ listStyle: "none" }} */>
           <li className="flex text-lg w-full border-b-[2px] border-theme-color-8">
-            <div className="w-auto min-w-52 max-w-full p-1">Irányítószám</div>
-            <div className="w-auto min-w-52 max-w-full p-1">Nem</div>
-            <div className="w-auto min-w-52 max-w-full p-1">Név</div>
+            <div className="w-1/3 p-1">Irányítószám</div>
+            <div className="w-1/3 p-1">Nem</div>
+            <div className="w-1/3 p-1">Név</div>
           </li>
           {loading ? (
             <div className="flex w-full justify-center my-10">
@@ -225,15 +142,12 @@ export const UserList = () => {
           ) : (
             <>
               {visibleUsers.map((user: User, index) => (
-                /* display: "flex", flexWrap: "wrap"  */
                 <li key={index} className="flex w-full">
-                  <div className="w-auto min-w-52 max-w-full p-1">
-                    {user.location.postcode}
-                  </div>
-                  <div className="w-auto min-w-52 max-w-full p-1">
+                  <div className="w-1/3 p-1">{user.location.postcode}</div>
+                  <div className="w-1/3 p-1">
                     {user.gender === "female" ? "Nő" : "Férfi"}
                   </div>
-                  <div className="w-auto min-w-52 max-w-full p-1">
+                  <div className="w-1/3 p-1">
                     {user.name.title} {user.name.first} {user.name.last}
                   </div>
                 </li>
@@ -248,11 +162,13 @@ export const UserList = () => {
             onClick={handlePrevious}
             disabled={page === 1}
             className="bg-theme-color-14 w-8 h-8 bg-[url('/src/assets/chevron-left.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer disabled:bg-grey"
+            title="Előző"
           ></button>
           <button
             onClick={handleNext}
             disabled={page === Math.ceil(users.length / numberOfVisibleUsers)}
             className="bg-theme-color-14 w-8 h-8 bg-[url('/src/assets/chevron-right.svg')] bg-no-repeat bg-contain bg-center border-none cursor-pointer disabled:bg-grey"
+            title="Következő"
           ></button>
         </div>
       </div>
