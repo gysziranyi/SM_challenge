@@ -1,7 +1,7 @@
 import React from "react";
 //import logo from './logo.svg';
 import "./App.css";
-import { UserList } from "./components/UserList";
+import { UserPage } from "./pages/UsersPage";
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
       </header>
 
       <main className="py-10 mx-auto w-3/4">
-        <UserList />
+        <UserPage />
       </main>
     </div>
   );
